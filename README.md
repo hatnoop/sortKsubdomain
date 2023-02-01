@@ -25,3 +25,11 @@ cat result.txt | jq
 ```
 cat result.txt | jq '.[]|.subdomain'
 ```
+
+额外参数（非必要）
+
+```
+-d: 保存ip不为空或者ip不为0.0.0.0的子域名
+-i: 去重保存所有不为cdn的ip
+```
+
