@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import ipaddress
 
 def checkCDN_subdomains(subdomain, cname, ips):
     from CDN.checkCDN import checkCDN
@@ -12,10 +13,17 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Process some input and output files.')
     parser.add_argument('-f', '--input_file', type=str, required=True, help='input file name')
     parser.add_argument('-o', '--output_file', type=str, required=True, help='output file name')
-    parser.add_argument('-d', '--empty_ips', action='store_true', help='Save subdomains with not empty or not 0.0.0.0 IPs')
-    parser.add_argument('-i', '--not_cdn', action='store_true', help='Save IPs with cdn value notcdn')
-
+    parser.add_argument('-d', '--sortSubdomain', action='store_true', help='Save subdomains with not empty or not 0.0.0.0 IPs')
+    parser.add_argument('-i', '--sortIps', action='store_true', help='Save IPs with Effective internet ip')
     return parser.parse_args()
+
+def is_internal_ip(ip):
+    try:
+        ip = ipaddress.ip_address(ip)
+    except ValueError:
+        return False
+    return ip.is_private
+
 
 def main(args):
     result = []
@@ -41,24 +49,28 @@ def main(args):
     with open(args.output_file, 'w') as f:
         f.write(json.dumps(result, indent=4))
 
-    empty_ips = []
-    if args.empty_ips:
+    sortSubdomain = []
+    if args.sortSubdomain:
         for item in result:
             if item['ip'] and item['ip'] != ['0.0.0.0']:
-                empty_ips.append(item['subdomain'])
-        subdomainsfilename = "subdomains-" + args.output_file
+                sortSubdomain.append(item['subdomain'])
+        subdomainsfilename = "sortSubdomains-" + args.output_file
         with open(subdomainsfilename, 'w') as f:
-            f.write('\n'.join(empty_ips))
+            f.write('\n'.join(sortSubdomain))
 
-    not_cdn = []
-    if args.not_cdn:
+    sortIps = []
+    if args.sortIps:
         for item in result:
             if item['cdn'] == 'notcdn':
-                not_cdn.extend(item['ip'])
-        not_cdn = list(set(not_cdn))
-        notCDNIPfilename = "notCDNIP-" + args.output_file
+                for ip in item['ip']:
+                    # 检查IP是否在内网范围
+                    if not is_internal_ip(ip):
+                        sortIps.append(ip)
+        sortIps = list(set(sortIps))
+        notCDNIPfilename = "sortIps-" + args.output_file
         with open(notCDNIPfilename, 'w') as f:
-            f.write('\n'.join(not_cdn))
+            f.write('\n'.join(sortIps))
+
 
 
 if __name__ == "__main__":

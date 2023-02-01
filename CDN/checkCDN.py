@@ -1,5 +1,6 @@
 import ipaddress
 import geoip2.database
+import os
 
 # 通过查询pdns，然后排除国内外常见的cdn段，如果出现极有可能是真实ip
 cdns = [
@@ -111,8 +112,12 @@ ASNS = ['10576', '10762', '11748', '131099', '132601', '133496', '134409', '1352
 
 cdnDict = {}
 
+# 获取当前项目路径
+dirpath = os.path.dirname(os.path.abspath(__file__))
+
+
 # 从文件读取CDN域名列表
-with open('CDN/cdn-domain.conf', 'rt') as f:
+with open(dirpath+"/cdn-domain.conf", 'rt') as f:
 # with open('cdn-domain.conf', 'rt') as f:
     for line in f.readlines():
         line = line.strip()
@@ -134,7 +139,7 @@ def cnameCheckCDN(cname):
 
 # 通过IP判断是否是CDN
 def ipCheckCDN(ips):
-    with geoip2.database.Reader('CDN/GeoLite2-ASN.mmdb') as reader:
+    with geoip2.database.Reader(dirpath+'/GeoLite2-ASN.mmdb') as reader:
     # with geoip2.database.Reader('GeoLite2-ASN.mmdb') as reader:
         for ip in ips:
             ip_address = ipaddress.ip_address(ip)
