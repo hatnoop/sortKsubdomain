@@ -165,7 +165,6 @@ def checkCDN(cname, ips):
         return cname_result
 
 if __name__ == "__main__":
-    # subdomain = 'mgm.tiqianle.com'
-    cname = ['sell.be.mi.com.v.mi-dun.com', 'fastcdn.com']
-    ips = ["10.237.35.80", "10.237.35.81", '14.0.41.0']
+    cname = ['fastcdn.com']
+    ips = ['14.0.41.0']
     print(checkCDN(cname, ips))
