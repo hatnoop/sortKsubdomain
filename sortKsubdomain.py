@@ -52,7 +52,7 @@ def main(args):
     sortSubdomain = []
     if args.sortSubdomain:
         for item in result:
-            if item['ip'] and item['ip'] != ['0.0.0.0']:
+            if item['ip'] and item['ip'] != ['0.0.0.0'] and item['ip'] != ['127.0.0.1']:
                 sortSubdomain.append(item['subdomain'])
         subdomainsfilename = "sortSubdomains-" + args.output_file
         with open(subdomainsfilename, 'w') as f:
