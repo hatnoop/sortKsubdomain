@@ -40,6 +40,7 @@ def main(args):
                     ip.append(item)
             checkCdn = checkCDN_subdomains(subdomain, cname, ip)
             result.append({
+                "domain": subdomain.split('.')[-2] + '.' + subdomain.split('.')[-1]
                 "subdomain": subdomain,
                 "CNAME": cname,
                 "ip": ip,
